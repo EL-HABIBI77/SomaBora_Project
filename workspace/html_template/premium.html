@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://public-frontend-cos.metadl.com/mgx/img/favicon.png" type="image/png">
+    <title>SomaBora - Premium Upgrade</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h2>📚 SomaBora</h2>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Dashboard</a>
+                <a href="reports.html" class="nav-link">Reports</a>
+                <a href="premium.html" class="nav-link active premium-link">Premium</a>
+                <button class="nav-btn" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <section class="premium-header">
+            <div class="quote-card">
+                <h2>🚀 Upgrade to SomaBora Pro</h2>
+                <p>Unlock advanced features and supercharge your productivity</p>
+            </div>
+        </section>
+
+        <section class="features-comparison">
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h4>Advanced Analytics</h4>
+                    <p>Detailed insights, trends analysis, and performance predictions</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📤</div>
+                    <h4>Data Export</h4>
+                    <p>Export your study data to CSV, PDF, and other formats</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔔</div>
+                    <h4>Smart Reminders</h4>
+                    <p>Unlimited custom reminders with AI-powered scheduling</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h4>Long-term History</h4>
+                    <p>Access unlimited study history and streak tracking</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h4>Goal Templates</h4>
+                    <p>Pre-built study plans and customizable goal templates</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🏆</div>
+                    <h4>Priority Support</h4>
+                    <p>Get help faster with dedicated premium support</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="pricing-section">
+            <div class="pricing-card">
+                <h3>SomaBora Pro</h3>
+                <div class="price">
+                    <span class="price-currency">KES</span>500
+                    <span class="price-period">/month</span>
+                </div>
+                <p>Everything you need to maximize your study productivity</p>
+                
+                <div class="payment-options">
+                    <button onclick="initiatePayment('monthly')" class="btn btn-primary" style="width: 100%; margin: 1rem 0;">
+                        Upgrade Now - KES 500/month
+                    </button>
+                    <button onclick="initiatePayment('yearly')" class="btn btn-secondary" style="width: 100%;">
+                        Save 20% - KES 4,800/year
+                    </button>
+                </div>
+                
+                <div class="payment-security">
+                    <p style="font-size: 0.9rem; color: rgba(255,255,255,0.8); margin-top: 1rem;">
+                        🔒 Secure payments powered by IntaSend<br>
+                        💳 Supports M-Pesa, Card, and Bank transfers<br>
+                        ⚡ Instant activation after payment
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="testimonials">
+            <div class="goals-card">
+                <h3>💬 What Students Say</h3>
+                <div style="display: grid; gap: 1.5rem; margin-top: 1.5rem;">
+                    <blockquote style="border-left: 4px solid #667eea; padding-left: 1rem; font-style: italic;">
+                        "SomaBora Pro helped me increase my study time by 40%. The analytics are incredible!"
+                        <footer style="margin-top: 0.5rem; font-weight: 600;">- Sarah K., University of Nairobi</footer>
+                    </blockquote>
+                    <blockquote style="border-left: 4px solid #667eea; padding-left: 1rem; font-style: italic;">
+                        "The smart reminders keep me on track. Best investment for my studies!"
+                        <footer style="margin-top: 0.5rem; font-weight: 600;">- James M., JKUAT</footer>
+                    </blockquote>
+                </div>
+            </div>
+        </section>
+
+        <section class="faq-section">
+            <div class="reminders-card">
+                <h3>❓ Frequently Asked Questions</h3>
+                <div class="faq-list">
+                    <details style="margin: 1rem 0; padding: 1rem; border: 1px solid #eee; border-radius: 8px;">
+                        <summary style="cursor: pointer; font-weight: 600;">How does the payment work?</summary>
+                        <p style="margin-top: 1rem;">We use IntaSend for secure payments. You can pay via M-Pesa, debit/credit card, or bank transfer. Your premium features activate instantly after successful payment.</p>
+                    </details>
+                    <details style="margin: 1rem 0; padding: 1rem; border: 1px solid #eee; border-radius: 8px;">
+                        <summary style="cursor: pointer; font-weight: 600;">Can I cancel anytime?</summary>
+                        <p style="margin-top: 1rem;">Yes! You can cancel your subscription anytime. You'll continue to have access to premium features until the end of your billing period.</p>
+                    </details>
+                    <details style="margin: 1rem 0; padding: 1rem; border: 1px solid #eee; border-radius: 8px;">
+                        <summary style="cursor: pointer; font-weight: 600;">Is my data secure?</summary>
+                        <p style="margin-top: 1rem;">Absolutely! We use industry-standard encryption and never share your personal study data. Your privacy is our priority.</p>
+                    </details>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Payment Modal -->
+    <div id="payment-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="closePaymentModal()">&times;</span>
+            <h3>Complete Your Upgrade</h3>
+            <div id="payment-content">
+                <p>Redirecting to secure payment...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function sanitizeInput(input) {
+            if (typeof input !== 'string') return '';
+            return input.replace(/[<>\"'&]/g, '').trim();
+        }
+        
+        function initiatePayment(plan) {
+            const user = JSON.parse(localStorage.getItem('somabora_user') || '{}');
+            
+            if (!user.email) {
+                alert('Please log in first');
+                window.location.href = 'auth.html';
+                return;
+            }
+            
+            // Simulate IntaSend payment integration
+            const amount = plan === 'yearly' ? 4800 : 500;
+            const currency = 'KES';
+            
+            // In a real implementation, you would:
+            // 1. Create payment request to your backend
+            // 2. Backend calls IntaSend API to create checkout
+            // 3. Redirect user to IntaSend checkout page
+            // 4. Handle webhook for payment confirmation
+            
+            // For MVP demo, simulate successful payment
+            if (confirm(`Proceed with payment of ${currency} ${amount} for SomaBora Pro (${plan})?`)) {
+                simulatePaymentSuccess(plan, amount);
+            }
+        }
+        
+        function simulatePaymentSuccess(plan, amount) {
+            // Simulate payment processing delay
+            showPaymentModal('Processing payment...');
+            
+            setTimeout(() => {
+                // Update user to pro status
+                const user = JSON.parse(localStorage.getItem('somabora_user') || '{}');
+                user.isPro = true;
+                user.proExpires = new Date(Date.now() + (plan === 'yearly' ? 365 : 30) * 24 * 60 * 60 * 1000);
+                user.proPlan = plan;
+                
+                localStorage.setItem('somabora_user', JSON.stringify(user));
+                
+                // Record payment
+                const payments = JSON.parse(localStorage.getItem('somabora_payments') || '[]');
+                payments.push({
+                    id: 'demo_' + Date.now(),
+                    amount: amount,
+                    currency: 'KES',
+                    plan: plan,
+                    status: 'completed',
+                    date: new Date().toISOString()
+                });
+                localStorage.setItem('somabora_payments', JSON.stringify(payments));
+                
+                showPaymentModal(`
+                    <div style="text-align: center;">
+                        <h3 style="color: #4CAF50;">🎉 Payment Successful!</h3>
+                        <p>Welcome to SomaBora Pro!</p>
+                        <p>Your premium features are now active.</p>
+                        <button onclick="closePaymentModal(); window.location.href='index.html'" class="btn btn-primary">
+                            Go to Dashboard
+                        </button>
+                    </div>
+                `);
+            }, 2000);
+        }
+        
+        function showPaymentModal(content) {
+            const modal = document.getElementById('payment-modal');
+            const contentDiv = document.getElementById('payment-content');
+            
+            contentDiv.innerHTML = content;
+            modal.style.display = 'block';
+        }
+        
+        function closePaymentModal() {
+            document.getElementById('payment-modal').style.display = 'none';
+        }
+        
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.clear();
+                window.location.href = 'auth.html';
+            }
+        }
+        
+        // Check if user is already pro
+        document.addEventListener('DOMContentLoaded', function() {
+            const user = JSON.parse(localStorage.getItem('somabora_user') || '{}');
+            
+            if (!user.email) {
+                window.location.href = 'auth.html';
+                return;
+            }
+            
+            if (user.isPro) {
+                const proStatus = document.createElement('div');
+                proStatus.className = 'quote-card';
+                proStatus.innerHTML = `
+                    <h3 style="color: #4CAF50;">✨ You're already a Pro member!</h3>
+                    <p>Enjoying premium features since ${new Date(user.proExpires).toLocaleDateString()}</p>
+                    <button onclick="window.location.href='index.html'" class="btn btn-primary">
+                        Back to Dashboard
+                    </button>
+                `;
+                
+                document.querySelector('.main-content').insertBefore(proStatus, document.querySelector('.features-comparison'));
+            }
+        });
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('payment-modal');
+            if (event.target === modal) {
+                closePaymentModal();
+            }
+        }
+    </script>
+
+    <style>
+        .modal {
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal-content {
+            background: white;
+            margin: 10% auto;
+            padding: 2rem;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+        
+        .close {
+            position: absolute;
+            right: 1rem;
+            top: 1rem;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #999;
+        }
+        
+        .close:hover {
+            color: #333;
+        }
+        
+        .faq-list details summary {
+            list-style: none;
+        }
+        
+        .faq-list details summary::-webkit-details-marker {
+            display: none;
+        }
+        
+        .faq-list details summary::before {
+            content: '▶';
+            margin-right: 0.5rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .faq-list details[open] summary::before {
+            transform: rotate(90deg);
+        }
+    </style>
+</body>
+
+</html>

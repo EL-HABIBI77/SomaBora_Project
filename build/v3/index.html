@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://public-frontend-cos.metadl.com/mgx/img/favicon.png" type="image/png">
+    <title>SomaBora - Boost Your Study Productivity</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script type="module" crossorigin src="/assets/index-CCkLDb20.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-DZdC-BzY.css">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h2>📚 SomaBora</h2>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link active">Dashboard</a>
+                <a href="reports.html" class="nav-link">Reports</a>
+                <a href="premium.html" class="nav-link premium-link">Premium</a>
+                <button class="nav-btn" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <!-- Motivational Quote Section -->
+        <section class="quote-section">
+            <div class="quote-card">
+                <p id="daily-quote" class="quote-text">"Success is the sum of small efforts repeated day in and day out."</p>
+                <span class="quote-author">- Robert Collier</span>
+            </div>
+        </section>
+
+        <!-- Study Timer Section -->
+        <section class="timer-section">
+            <div class="timer-card">
+                <h3>Study Timer</h3>
+                <div class="timer-display">
+                    <span id="timer-hours">00</span>:
+                    <span id="timer-minutes">00</span>:
+                    <span id="timer-seconds">00</span>
+                </div>
+                <div class="timer-controls">
+                    <button id="start-btn" class="btn btn-primary" onclick="startTimer()">Start</button>
+                    <button id="pause-btn" class="btn btn-secondary" onclick="pauseTimer()" disabled>Pause</button>
+                    <button id="stop-btn" class="btn btn-danger" onclick="stopTimer()" disabled>Stop</button>
+                </div>
+                <div class="session-info">
+                    <input type="text" id="session-category" placeholder="What are you studying?" class="session-input">
+                </div>
+            </div>
+        </section>
+
+        <!-- Daily Goals Section -->
+        <section class="goals-section">
+            <div class="goals-card">
+                <h3>Today's Goals</h3>
+                <div class="goal-setting">
+                    <label for="daily-target">Daily Target (minutes):</label>
+                    <input type="number" id="daily-target" min="15" max="480" value="120" class="goal-input">
+                    <button onclick="setDailyGoal()" class="btn btn-small">Set Goal</button>
+                </div>
+                <div class="goal-progress">
+                    <div class="progress-bar">
+                        <div id="progress-fill" class="progress-fill"></div>
+                    </div>
+                    <p class="progress-text">
+                        <span id="minutes-studied">0</span> / <span id="target-minutes">120</span> minutes
+                        (<span id="progress-percentage">0</span>%)
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Stats Section -->
+        <section class="stats-section">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h4>Today</h4>
+                    <p class="stat-number" id="today-minutes">0</p>
+                    <span class="stat-label">minutes</span>
+                </div>
+                <div class="stat-card">
+                    <h4>This Week</h4>
+                    <p class="stat-number" id="week-minutes">0</p>
+                    <span class="stat-label">minutes</span>
+                </div>
+                <div class="stat-card">
+                    <h4>Streak</h4>
+                    <p class="stat-number" id="current-streak">0</p>
+                    <span class="stat-label">days</span>
+                </div>
+                <div class="stat-card">
+                    <h4>Sessions</h4>
+                    <p class="stat-number" id="total-sessions">0</p>
+                    <span class="stat-label">completed</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Reminders Section -->
+        <section class="reminders-section">
+            <div class="reminders-card">
+                <h3>Smart Reminders</h3>
+                <div class="reminder-settings">
+                    <label class="reminder-item">
+                        <input type="checkbox" id="break-reminders" checked>
+                        <span>Break reminders (every 25 minutes)</span>
+                    </label>
+                    <label class="reminder-item">
+                        <input type="checkbox" id="water-reminders" checked>
+                        <span>Hydration reminders (every hour)</span>
+                    </label>
+                    <label class="reminder-item">
+                        <input type="checkbox" id="goal-reminders" checked>
+                        <span>Daily goal reminders</span>
+                    </label>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Notification Toast -->
+    <div id="notification-toast" class="toast hidden">
+        <span id="toast-message"></span>
+        <button onclick="hideToast()" class="toast-close">&times;</button>
+    </div>
+
+</body>
+
+</html>

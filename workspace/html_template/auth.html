@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://public-frontend-cos.metadl.com/mgx/img/favicon.png" type="image/png">
+    <title>SomaBora - Login</title>
+    <link rel="stylesheet" href="./style.css">
+    <script>
+        const SUPABASE_URL = "https://ljusyfkhyqnahqqmddeu.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxqdXN5ZmtoeXFuYWhxcW1kZGV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY1NjQ4OTIsImV4cCI6MjA3MjE0MDg5Mn0.QKj9BdnDdhVdPpXlzVtnfej0MCueFdCFh-9p2Xz9Ros";
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    </script>
+</head>
+
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <h2>📚 Welcome to SomaBora</h2>
+            <p>Boost Your Study Productivity, Beat Procrastination</p>
+            
+            <form class="auth-form" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required 
+                           pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                           maxlength="100">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required 
+                           minlength="6" maxlength="100">
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Login / Sign Up</button>
+            </form>
+            
+            <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #eee;">
+                <p style="color: #666; font-size: 0.9rem; text-align: center;">
+                    For this MVP demo, any email/password combination will work.<br>
+                    Your data is stored locally in your browser.
+                </p>
+                <button onclick="demoLogin()" class="btn btn-secondary" style="margin-top: 1rem; width: 100%;">
+                    Try Demo Account
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Input sanitization function
+        function sanitizeInput(input) {
+            if (typeof input !== 'string') return '';
+            return input.replace(/[<>\"'&]/g, '').trim();
+        }
+        
+        // Rate limiting for login attempts
+        function checkRateLimit() {
+            const attempts = JSON.parse(localStorage.getItem('login_attempts') || '[]');
+            const now = Date.now();
+            const recentAttempts = attempts.filter(time => now - time < 15 * 60 * 1000); // 15 minutes
+            
+            if (recentAttempts.length >= 5) {
+                alert('Too many login attempts. Please wait 15 minutes before trying again.');
+                return false;
+            }
+            
+            recentAttempts.push(now);
+            localStorage.setItem('login_attempts', JSON.stringify(recentAttempts));
+            return true;
+        }
+        
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            if (!checkRateLimit()) {
+                return;
+            }
+            
+            const email = sanitizeInput(document.getElementById('email').value);
+            const password = document.getElementById('password').value;
+            
+            // Basic validation
+            if (!email || !password) {
+                alert('Please fill in all fields.');
+                return;
+            }
+            
+            if (email.length > 100 || password.length > 100) {
+                alert('Input too long.');
+                return;
+            }
+            
+            // Email validation
+            const emailRegex = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
+            if (!emailRegex.test(email)) {
+                alert('Please enter a valid email address.');
+                return;
+            }
+            
+            // For MVP, simulate successful login
+            const userData = {
+                email: email,
+                loginTime: Date.now(),
+                isPro: false
+            };
+            
+            localStorage.setItem('somabora_user', JSON.stringify(userData));
+            localStorage.removeItem('login_attempts'); // Clear attempts on successful login
+            
+            // Redirect to main app
+            window.location.href = 'index.html';
+        }
+        
+        function demoLogin() {
+            const userData = {
+                email: 'demo@somabora.com',
+                loginTime: Date.now(),
+                isPro: false
+            };
+            
+            localStorage.setItem('somabora_user', JSON.stringify(userData));
+            window.location.href = 'index.html';
+        }
+        
+        // Check if already logged in
+        document.addEventListener('DOMContentLoaded', function() {
+            const user = localStorage.getItem('somabora_user');
+            if (user) {
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+
+</html>

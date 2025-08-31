@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://public-frontend-cos.metadl.com/mgx/img/favicon.png" type="image/png">
+    <title>SomaBora - Weekly Reports</title>
+    <link rel="stylesheet" href="./style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h2>📚 SomaBora</h2>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Dashboard</a>
+                <a href="reports.html" class="nav-link active">Reports</a>
+                <a href="premium.html" class="nav-link premium-link">Premium</a>
+                <button class="nav-btn" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <section class="reports-header">
+            <div class="quote-card">
+                <h2>📊 Weekly Performance Report</h2>
+                <p>Track your study progress and identify patterns</p>
+            </div>
+        </section>
+
+        <section class="charts-section">
+            <div class="chart-container">
+                <div class="chart-card">
+                    <h3>Daily Study Minutes (Last 7 Days)</h3>
+                    <canvas id="dailyChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <div class="chart-card">
+                    <h3>Study Categories Distribution</h3>
+                    <canvas id="categoryChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section class="stats-summary">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h4>Total This Week</h4>
+                    <p class="stat-number" id="week-total">0</p>
+                    <span class="stat-label">minutes</span>
+                </div>
+                <div class="stat-card">
+                    <h4>Daily Average</h4>
+                    <p class="stat-number" id="daily-average">0</p>
+                    <span class="stat-label">minutes</span>
+                </div>
+                <div class="stat-card">
+                    <h4>Best Day</h4>
+                    <p class="stat-number" id="best-day">0</p>
+                    <span class="stat-label">minutes</span>
+                </div>
+                <div class="stat-card">
+                    <h4>Goal Achievement</h4>
+                    <p class="stat-number" id="goal-rate">0</p>
+                    <span class="stat-label">%</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="insights-section">
+            <div class="goals-card">
+                <h3>📈 Study Insights</h3>
+                <div id="insights-content">
+                    <p>Keep studying to generate personalized insights!</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="export-section">
+            <div class="reminders-card">
+                <h3>📤 Export Data</h3>
+                <p>Download your study data for external analysis</p>
+                <div style="margin-top: 1rem;">
+                    <button onclick="exportData('json')" class="btn btn-secondary">Export as JSON</button>
+                    <button onclick="exportData('csv')" class="btn btn-primary" style="margin-left: 1rem;">
+                        Export as CSV <span class="premium-badge">PRO</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        let dailyChart, categoryChart;
+        
+        function sanitizeInput(input) {
+            if (typeof input !== 'string') return '';
+            return input.replace(/[<>\"'&]/g, '').trim();
+        }
+        
+        function getData(key) {
+            try {
+                const data = localStorage.getItem(`somabora_${key}`);
+                return data ? JSON.parse(data) : null;
+            } catch (error) {
+                console.error('Error reading data:', error);
+                return null;
+            }
+        }
+        
+        function generateCharts() {
+            const dailyStats = getData('dailyStats') || {};
+            const sessions = getData('sessions') || [];
+            const goals = getData('goals') || {};
+            
+            // Generate last 7 days data
+            const last7Days = [];
+            const dailyMinutes = [];
+            const dailyGoals = [];
+            
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                const dateStr = date.toDateString();
+                const shortDate = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                
+                last7Days.push(shortDate);
+                dailyMinutes.push(dailyStats[dateStr]?.minutes || 0);
+                dailyGoals.push(goals[dateStr] || 120);
+            }
+            
+            // Daily Chart
+            const dailyCtx = document.getElementById('dailyChart').getContext('2d');
+            if (dailyChart) dailyChart.destroy();
+            
+            dailyChart = new Chart(dailyCtx, {
+                type: 'bar',
+                data: {
+                    labels: last7Days,
+                    datasets: [{
+                        label: 'Minutes Studied',
+                        data: dailyMinutes,
+                        backgroundColor: 'rgba(102, 126, 234, 0.8)',
+                        borderColor: 'rgba(102, 126, 234, 1)',
+                        borderWidth: 2,
+                        borderRadius: 8
+                    }, {
+                        label: 'Daily Goal',
+                        data: dailyGoals,
+                        type: 'line',
+                        borderColor: 'rgba(245, 87, 108, 1)',
+                        backgroundColor: 'rgba(245, 87, 108, 0.1)',
+                        borderWidth: 3,
+                        fill: false,
+                        pointBackgroundColor: 'rgba(245, 87, 108, 1)',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Minutes'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Category Chart
+            const categoryStats = {};
+            sessions.forEach(session => {
+                const category = session.category || 'General Study';
+                categoryStats[category] = (categoryStats[category] || 0) + session.minutes;
+            });
+            
+            const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+            if (categoryChart) categoryChart.destroy();
+            
+            const categoryLabels = Object.keys(categoryStats);
+            const categoryData = Object.values(categoryStats);
+            const colors = [
+                'rgba(102, 126, 234, 0.8)',
+                'rgba(245, 87, 108, 0.8)',
+                'rgba(255, 167, 38, 0.8)',
+                'rgba(76, 175, 80, 0.8)',
+                'rgba(156, 39, 176, 0.8)',
+                'rgba(233, 30, 99, 0.8)'
+            ];
+            
+            categoryChart = new Chart(categoryCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: categoryLabels,
+                    datasets: [{
+                        data: categoryData,
+                        backgroundColor: colors.slice(0, categoryLabels.length),
+                        borderColor: colors.slice(0, categoryLabels.length).map(color => color.replace('0.8', '1')),
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        }
+                    }
+                }
+            });
+        }
+        
+        function updateStats() {
+            const dailyStats = getData('dailyStats') || {};
+            const goals = getData('goals') || {};
+            
+            // Calculate week stats
+            const weekStart = new Date();
+            weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+            
+            let weekTotal = 0;
+            let daysWithGoals = 0;
+            let daysMetGoals = 0;
+            let bestDay = 0;
+            
+            for (let i = 0; i < 7; i++) {
+                const date = new Date(weekStart);
+                date.setDate(weekStart.getDate() + i);
+                const dateStr = date.toDateString();
+                
+                const dayMinutes = dailyStats[dateStr]?.minutes || 0;
+                const dayGoal = goals[dateStr] || 120;
+                
+                weekTotal += dayMinutes;
+                bestDay = Math.max(bestDay, dayMinutes);
+                
+                if (dayGoal > 0) {
+                    daysWithGoals++;
+                    if (dayMinutes >= dayGoal * 0.8) {
+                        daysMetGoals++;
+                    }
+                }
+            }
+            
+            const dailyAverage = Math.round(weekTotal / 7);
+            const goalRate = daysWithGoals > 0 ? Math.round((daysMetGoals / daysWithGoals) * 100) : 0;
+            
+            // Update UI
+            document.getElementById('week-total').textContent = weekTotal;
+            document.getElementById('daily-average').textContent = dailyAverage;
+            document.getElementById('best-day').textContent = bestDay;
+            document.getElementById('goal-rate').textContent = goalRate;
+        }
+        
+        function generateInsights() {
+            const dailyStats = getData('dailyStats') || {};
+            const sessions = getData('sessions') || [];
+            const insightsEl = document.getElementById('insights-content');
+            
+            if (sessions.length === 0) {
+                insightsEl.innerHTML = '<p>Start studying to generate personalized insights!</p>';
+                return;
+            }
+            
+            const insights = [];
+            
+            // Study pattern analysis
+            const hourStats = {};
+            sessions.forEach(session => {
+                const hour = new Date(session.timestamp).getHours();
+                hourStats[hour] = (hourStats[hour] || 0) + 1;
+            });
+            
+            const bestHour = Object.entries(hourStats).sort((a, b) => b[1] - a[1])[0];
+            if (bestHour) {
+                insights.push(`🕐 You're most productive at ${bestHour[0]}:00`);
+            }
+            
+            // Streak analysis
+            const streak = calculateStreak();
+            if (streak > 0) {
+                insights.push(`🔥 Current streak: ${streak} days! Keep it up!`);
+            }
+            
+            // Category analysis
+            const categoryStats = {};
+            sessions.forEach(session => {
+                const category = session.category || 'General Study';
+                categoryStats[category] = (categoryStats[category] || 0) + session.minutes;
+            });
+            
+            const topCategory = Object.entries(categoryStats).sort((a, b) => b[1] - a[1])[0];
+            if (topCategory) {
+                insights.push(`📚 Most studied subject: ${topCategory[0]} (${topCategory[1]} minutes)`);
+            }
+            
+            // Weekly comparison
+            const thisWeek = Object.values(dailyStats).slice(-7).reduce((sum, day) => sum + (day?.minutes || 0), 0);
+            const lastWeek = Object.values(dailyStats).slice(-14, -7).reduce((sum, day) => sum + (day?.minutes || 0), 0);
+            
+            if (lastWeek > 0) {
+                const change = ((thisWeek - lastWeek) / lastWeek * 100).toFixed(1);
+                const trend = change > 0 ? '📈' : '📉';
+                insights.push(`${trend} ${Math.abs(change)}% ${change > 0 ? 'increase' : 'decrease'} from last week`);
+            }
+            
+            insightsEl.innerHTML = insights.map(insight => `<p>• ${insight}</p>`).join('');
+        }
+        
+        function calculateStreak() {
+            const dailyStats = getData('dailyStats') || {};
+            const goals = getData('goals') || {};
+            
+            let streak = 0;
+            const today = new Date();
+            
+            for (let i = 0; i < 365; i++) {
+                const checkDate = new Date(today);
+                checkDate.setDate(today.getDate() - i);
+                const dateStr = checkDate.toDateString();
+                
+                const studiedMinutes = dailyStats[dateStr]?.minutes || 0;
+                const targetMinutes = goals[dateStr] || 120;
+                
+                if (studiedMinutes >= targetMinutes * 0.8) {
+                    streak++;
+                } else {
+                    break;
+                }
+            }
+            
+            return streak;
+        }
+        
+        function exportData(format) {
+            const user = JSON.parse(localStorage.getItem('somabora_user') || '{}');
+            
+            if (format === 'csv' && !user.isPro) {
+                alert('CSV export is a premium feature. Please upgrade to Pro!');
+                window.location.href = 'premium.html';
+                return;
+            }
+            
+            const sessions = getData('sessions') || [];
+            const dailyStats = getData('dailyStats') || {};
+            const goals = getData('goals') || {};
+            
+            const exportData = {
+                sessions,
+                dailyStats,
+                goals,
+                exportDate: new Date().toISOString()
+            };
+            
+            if (format === 'json') {
+                const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+                downloadFile(blob, 'somabora-data.json');
+            } else if (format === 'csv') {
+                let csv = 'Date,Minutes,Category,Goal,Goal Met\n';
+                sessions.forEach(session => {
+                    const goal = goals[session.date] || 120;
+                    const dayTotal = dailyStats[session.date]?.minutes || 0;
+                    const goalMet = dayTotal >= goal * 0.8 ? 'Yes' : 'No';
+                    csv += `${session.date},${session.minutes},"${session.category}",${goal},${goalMet}\n`;
+                });
+                
+                const blob = new Blob([csv], { type: 'text/csv' });
+                downloadFile(blob, 'somabora-data.csv');
+            }
+        }
+        
+        function downloadFile(blob, filename) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.clear();
+                window.location.href = 'auth.html';
+            }
+        }
+        
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check authentication
+            const user = localStorage.getItem('somabora_user');
+            if (!user) {
+                window.location.href = 'auth.html';
+                return;
+            }
+            
+            generateCharts();
+            updateStats();
+            generateInsights();
+        });
+    </script>
+</body>
+
+</html>
